@@ -4,7 +4,7 @@
 
 #include <string>
 
-#include "Common.h"
+#include "common.h"
 
 using namespace std;
 
@@ -50,3 +50,4 @@ private:
 	// 客户端列表
 	list<int> clients_list;
 };
+#endif
