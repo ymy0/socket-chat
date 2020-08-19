@@ -140,15 +140,11 @@ int Server::SendBroadcastMessage(int clientfd)
 			cout<<"接收到客户端client"<<clientfd<<"群聊消息"<<msg.content<<endl;
 			// 格式化发送的消息内容 #define SERVER_MESSAGE "ClientID %d say >> %s"
 			sprintf(format_message, SERVER_MESSAGE, clientfd, msg.content);
-			memcpy(msg.content, format_message, BUF_SIZE);
 			// 遍历客户端列表依次发送消息，需要判断不要给来源客户端发
-			list<int>::iterator it;
-			for (it = clients_list.begin(); it != clients_list.end(); ++it) {
-				if (*it != clientfd) {
+			for (auto it:clients_list) {
+				if (it != clientfd) {
 					//把发送的结构体转换为字符串
-					bzero(send_buf, BUF_SIZE);
-					memcpy(send_buf, &msg, sizeof(msg));
-					if (send(*it, send_buf, sizeof(send_buf), 0) < 0) {
+					if (send(it, format_message, sizeof(send_buf), 0) < 0) {
 						return -1;
 					}
 				}
@@ -160,10 +156,7 @@ int Server::SendBroadcastMessage(int clientfd)
 			cout<<"接收到客户端client"<<clientfd<<"私聊消息给client"<<msg.toID<<": "<<msg.content<<endl;
 			bool private_offline = true;
 			sprintf(format_message, SERVER_PRIVATE_MESSAGE, clientfd, msg.content);
-			memcpy(msg.content, format_message, BUF_SIZE);
-			bzero(send_buf, BUF_SIZE);
-			memcpy(send_buf, &msg, sizeof(msg));
-			if (send(msg.toID, send_buf, sizeof(send_buf), 0) < 0) {
+			if (send(msg.toID, format_message, sizeof(format_message), 0) < 0) {
 					return -1;
 			}
 			return 0;
