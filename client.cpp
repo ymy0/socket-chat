@@ -123,8 +123,8 @@ void Client::Start() {
 				memset(send_buf, 0, BUF_SIZE);
 				//结构体转换为字符串
 			//msg.type=1;
-				memcpy(send_buf, &msg.content, sizeof(msg.content));
-				cout<<"你发出的内容是:"<<send_buf<<endl;
+				memcpy(send_buf, msg.content, sizeof(msg.content));
+				cout<<"你发出的内容是:"<<send_buf;
 				if (atoi(msg.content) != 0)
 				{
 					if (write(pipe_fd[1], send_buf, sizeof(send_buf)) < 0) {

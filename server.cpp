@@ -98,7 +98,6 @@ int Server::SendBroadcastMessage(int clientfd)
 	
 	//判断接受到的信息是私聊还是群聊
 	msg.fromID = clientfd;
-	cout<<"消息的类型ID是"<<msg.type<<endl;
 	if (msg.content[0] == '\\' && isdigit(msg.content[1])) {
 		msg.type = 1;
 		msg.toID = msg.content[1] - '0';
@@ -107,6 +106,7 @@ int Server::SendBroadcastMessage(int clientfd)
 	else
 		msg.type = 0;
 	// 如果客户端关闭了连接
+	cout << "消息的类型ID是" << msg.type << endl;
 	if (len == 0)
 	{
 		close(clientfd);
