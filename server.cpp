@@ -209,7 +209,7 @@ void Server::Start() {
 				cout << "Now there are " << clients_list.size() << " clients int the chat room" << endl;
 
 				// 服务端发送欢迎信息  
-				cout << "welcome message" << endl;
+				//cout << "welcome message" << endl;
 				char message[BUF_SIZE];
 				bzero(message, BUF_SIZE);
 				sprintf(message, SERVER_WELCOME, clientfd);

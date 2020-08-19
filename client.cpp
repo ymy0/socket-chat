@@ -29,7 +29,7 @@ Client::Client() {
 
 // 连接服务器
 void Client::Connect() {
-	cout << "Connect Server: " << SERVER_IP << " : " << SERVER_PORT << endl;
+	cout << "Connect Server: " << SERVER_IP << ":" << SERVER_PORT << endl;
 
 	// 创建socket
 	sock = socket(PF_INET, SOCK_STREAM, 0);
