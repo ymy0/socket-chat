@@ -91,6 +91,7 @@ int Server::SendBroadcastMessage(int clientfd)
 	// 接收新消息
 	cout << "receive data from client(clientID = " << clientfd << ")" << endl;
 	int len = recv(clientfd, recv_buf, BUF_SIZE, 0);
+	cout << "recv()的返回值len是" << len << endl;
 	//清空结构体，把接受到的字符串转换为结构体
 	memset(&msg, 0, sizeof(msg));
 	memcpy(&msg.content, recv_buf, sizeof(msg.content));
@@ -126,10 +127,10 @@ int Server::SendBroadcastMessage(int clientfd)
 		if (clients_list.size() == 1) {
 			// 发送提示消息
 			bzero(msg.content, sizeof(msg.content));
-			memcpy(&msg.content, CAUTION, sizeof(msg.content));
-			bzero(send_buf, BUF_SIZE);
-			memcpy(send_buf, &msg.content, sizeof(msg.content));
-			send(clientfd, send_buf, sizeof(send_buf), 0);
+			memcpy(msg.content, CAUTION, sizeof(msg.content));
+			//bzero(send_buf, BUF_SIZE);
+			//memcpy(send_buf, &msg.content, sizeof(msg.content));
+			send(clientfd, msg.content, sizeof(msg.content), 0);
 			return len;
 		}
 		//存放格式化后的信息
