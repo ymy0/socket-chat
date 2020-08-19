@@ -6,8 +6,6 @@ using namespace std;
 
 //服务端类成员函数
 
-//服务端类构造函数
-
 Server::Server() {
 	// 初始化服务器地址和端口
 	serverAddr.sin_family = PF_INET;
@@ -26,10 +24,13 @@ void Server::Init() {
 
 	//创建监听socket，创建一个socket在系统的命名空间那里
 	listener = socket(PF_INET, SOCK_STREAM, 0);
+	cout<<"创建的socket的监听listener的值为："<<listener<<endl;
 	if (listener < 0) { perror("listener"); exit(-1); }//创建失败
 
 	//绑定地址，把创建的socket绑定到自己设置的地址上面
-	if (bind(listener, (struct sockaddr*) & serverAddr, sizeof(serverAddr)) < 0) {
+	int x=bind(listener, (struct sockaddr*) & serverAddr, sizeof(serverAddr));
+	cout<<"bind()<<"<<x<<endl;
+	if (x < 0) {
 		perror("bind error");
 		exit(-1);
 	}
@@ -43,6 +44,7 @@ void Server::Init() {
 		backlog：等待连接队列的最大长度。
 	*/
 	int ret = listen(listener, 5);
+	cout<<"listern()<<"<<ret<<endl;
 	if (ret < 0) {
 		perror("listen error");
 		exit(-1);
@@ -52,7 +54,7 @@ void Server::Init() {
 
 	//在内核中创建事件表 epfd是一个句柄 
 	epfd = epoll_create(EPOLL_SIZE);
-
+	cout<<"epoll_create()句柄:="<<epfd<<endl;
 	if (epfd < 0) {
 		perror("epfd error");
 		exit(-1);
@@ -87,14 +89,15 @@ int Server::SendBroadcastMessage(int clientfd)
 	*/
 	bzero(recv_buf, BUF_SIZE);
 	// 接收新消息
-	cout << "read from client(clientID = " << clientfd << ")" << endl;
+	cout << "receive data from client(clientID = " << clientfd << ")" << endl;
 	int len = recv(clientfd, recv_buf, BUF_SIZE, 0);
 	//清空结构体，把接受到的字符串转换为结构体
 	memset(&msg, 0, sizeof(msg));
-	memcpy(&msg, recv_buf, sizeof(msg));
+	memcpy(&msg.content, recv_buf, sizeof(msg.content));
 	
 	//判断接受到的信息是私聊还是群聊
 	msg.fromID = clientfd;
+	cout<<"消息的类型ID是"<<msg.type<<endl;
 	if (msg.content[0] == '\\' && isdigit(msg.content[1])) {
 		msg.type = 1;
 		msg.toID = msg.content[1] - '0';
@@ -106,11 +109,11 @@ int Server::SendBroadcastMessage(int clientfd)
 	if (len == 0)
 	{
 		close(clientfd);
-
+		
 		// 在客户端列表中删除该客户端
 		clients_list.remove(clientfd);
 		cout << "ClientID = " << clientfd
-			<< " closed.\n now there are "
+			<< " 断开连接.\n now there are "
 			<< clients_list.size()
 			<< " client in the chat room"
 			<< endl;
@@ -122,9 +125,10 @@ int Server::SendBroadcastMessage(int clientfd)
 		// 判断是否聊天室还有其他客户端
 		if (clients_list.size() == 1) {
 			// 发送提示消息
+			bzero(msg.content, sizeof(msg.content));
 			memcpy(&msg.content, CAUTION, sizeof(msg.content));
 			bzero(send_buf, BUF_SIZE);
-			memcpy(send_buf, &msg, sizeof(msg));
+			memcpy(send_buf, &msg.content, sizeof(msg.content));
 			send(clientfd, send_buf, sizeof(send_buf), 0);
 			return len;
 		}
@@ -132,6 +136,7 @@ int Server::SendBroadcastMessage(int clientfd)
 		char format_message[BUF_SIZE];
 		//群聊
 		if (msg.type == 0) {
+			cout<<"接收到客户端client"<<clientfd<<"群聊消息"<<msg.content<<endl;
 			// 格式化发送的消息内容 #define SERVER_MESSAGE "ClientID %d say >> %s"
 			sprintf(format_message, SERVER_MESSAGE, clientfd, msg.content);
 			memcpy(msg.content, format_message, BUF_SIZE);
@@ -147,9 +152,11 @@ int Server::SendBroadcastMessage(int clientfd)
 					}
 				}
 			}
+			return 0;
 		}
 		//私聊
 		if (msg.type == 1) {
+			cout<<"接收到客户端client"<<clientfd<<"私聊消息给client"<<msg.toID<<": "<<msg.content<<endl;
 			bool private_offline = true;
 			sprintf(format_message, SERVER_PRIVATE_MESSAGE, clientfd, msg.content);
 			memcpy(msg.content, format_message, BUF_SIZE);
@@ -158,6 +165,7 @@ int Server::SendBroadcastMessage(int clientfd)
 			if (send(msg.toID, send_buf, sizeof(send_buf), 0) < 0) {
 					return -1;
 			}
+			return 0;
 		}
 	}
 	return len;
@@ -183,7 +191,7 @@ void Server::Start() {
 			break;
 		}
 
-		cout << "epoll_events_count =" << epoll_events_count << endl;
+		cout << "当前就绪的事件数量epoll_events_count =" << epoll_events_count << endl;
 
 		//处理这epoll_events_count个就绪事件
 		for (int i = 0; i < epoll_events_count; ++i)
@@ -196,7 +204,7 @@ void Server::Start() {
 				socklen_t client_addrLength = sizeof(struct sockaddr_in);
 				int clientfd = accept(listener, (struct sockaddr*) & client_address, &client_addrLength);
 
-				cout << "client connection from: "
+				cout << "收到新的客户端连接client connection from: "
 					<< inet_ntoa(client_address.sin_addr) << ":"
 					<< ntohs(client_address.sin_port) << ", clientfd = "
 					<< clientfd << endl;

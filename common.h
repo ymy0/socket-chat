@@ -29,7 +29,7 @@
 #define BUF_SIZE 0xFFFF
 
 // 新用户登录后的欢迎信息
-#define SERVER_WELCOME "welcome1234567890 welcome Welcome you join to the chat room! Your chat ID is: Client #%d"
+#define SERVER_WELCOME "Welcome you join to the chat room! Your chat ID is: Client #%d"
 
 // 其他用户收到消息的前缀
 #define SERVER_MESSAGE "ClientID %d say >> %s"

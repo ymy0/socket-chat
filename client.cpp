@@ -33,13 +33,16 @@ void Client::Connect() {
 
 	// 创建socket
 	sock = socket(PF_INET, SOCK_STREAM, 0);
+	cout<<"创建生成的socket值为"<<sock<<endl;
 	if (sock < 0) {
 		perror("sock error");
 		exit(-1);
 	}
 
+	int connect_id=connect(sock, (struct sockaddr*) & serverAddr, sizeof(serverAddr));
+	cout<<"连接服务器生成的connect_id的值为"<<connect_id;
 	// 连接服务端
-	if (connect(sock, (struct sockaddr*) & serverAddr, sizeof(serverAddr)) < 0) {
+	if (connect_id < 0) {
 		perror("connect error");
 		exit(-1);
 	}
@@ -111,6 +114,7 @@ void Client::Start() {
 			fgets(msg.content, BUF_SIZE, stdin);
 			// 客户输出exit,退出
 			if (strncasecmp(msg.content, EXIT, strlen(EXIT)) == 0) {
+				cout << "你已退出" << endl;
 				isClientwork = 0;
 			}
 			// 子进程将信息写入管道
@@ -118,7 +122,9 @@ void Client::Start() {
 				//清空发送缓存
 				memset(send_buf, 0, BUF_SIZE);
 				//结构体转换为字符串
-				memcpy(send_buf, &msg, sizeof(msg));
+			//msg.type=1;
+				memcpy(send_buf, &msg.content, sizeof(msg.content));
+				cout<<"你发出的内容是:"<<send_buf<<endl;
 				if (atoi(msg.content) != 0)
 				{
 					if (write(pipe_fd[1], send_buf, sizeof(send_buf)) < 0) {
@@ -150,7 +156,7 @@ void Client::Start() {
 					//清空结构体
 					memset(&msg, 0, sizeof(msg));
 					//将发来的消息转换为结构体
-					memcpy(&msg, recv_buf, sizeof(msg));
+					memcpy(&msg.content, recv_buf, sizeof(msg.content));
 
 					// ret= 0 服务端关闭
 					if (ret == 0) {
@@ -159,7 +165,7 @@ void Client::Start() {
 						isClientwork = 0;
 					}
 					else {
-						cout << msg.content << endl;
+						cout <<"你收到了新的消息："<< msg.content << endl;
 					}
 				}
 				//子进程写入事件发生，父进程处理并发送服务端
