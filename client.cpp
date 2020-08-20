@@ -80,6 +80,19 @@ void Client::Close() {
 		close(pipe_fd[1]);
 	}
 }
+// 断开连接，清理并关闭文件描述符
+Client::~Client() {
+
+        if (pid) {
+                //关闭父进程的管道和sock
+                close(pipe_fd[0]);
+                close(sock);
+        }
+        else {
+                //关闭子进程的管道
+                close(pipe_fd[1]);
+        }
+}
 
 // 启动客户端
 void Client::Start() {

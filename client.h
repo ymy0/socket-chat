@@ -14,6 +14,7 @@ public:
 	// 无参数构造函数
 	Client();
 
+	~Client();
 	// 连接服务器
 	void Connect();
 
