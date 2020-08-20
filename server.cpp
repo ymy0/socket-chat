@@ -18,6 +18,13 @@ Server::Server() {
 	// epool fd
 	epfd = 0;
 }
+Server::~Server() {
+        //关闭socket
+        close(listener);
+
+        //关闭epoll监听
+        close(epfd);
+}
 // 初始化服务端并启动监听
 void Server::Init() {
 	cout << "Init Server..." << endl;
@@ -91,7 +98,7 @@ int Server::SendBroadcastMessage(int clientfd)
 	// 接收新消息
 	cout << "receive data from client(clientID = " << clientfd << ")" << endl;
 	int len = recv(clientfd, recv_buf, BUF_SIZE, 0);
-	cout << "recv()的返回值len是" << len << endl;
+	cout << "recv()的返回值len是" << len<<"内容是：" <<recv_buf<< endl;
 	//清空结构体，把接受到的字符串转换为结构体
 	memset(&msg, 0, sizeof(msg));
 	memcpy(&msg.content, recv_buf, sizeof(msg.content));

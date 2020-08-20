@@ -117,6 +117,9 @@ void Client::Start() {
 				cout << "你已退出" << endl;
 				isClientwork = 0;
 			}
+			if (strncasecmp(msg.content, CHECK, strlen(CHECK)) == 0) {
+                                continue;
+                        }
 			// 子进程将信息写入管道
 			else {
 				//清空发送缓存

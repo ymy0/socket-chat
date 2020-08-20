@@ -37,7 +37,8 @@
 #define SERVER_PRIVATE_ERROR_MESSAGE "Client %d is not in the chat room yet~"
 // 退出系统
 #define EXIT "EXIT"
-
+//检测是否输入数据
+#define CHECK "00000"
 // 提醒你是聊天室中唯一的客户
 #define CAUTION "There is only one int the char room!"
 

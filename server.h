@@ -14,7 +14,7 @@ class Server {
 public:
 	// 无参数构造函数
 	Server();
-
+	~Server();
 	// 初始化服务器端设置
 	void Init();
 
