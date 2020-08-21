@@ -136,7 +136,7 @@ void Client::Start() {
 			// 客户输出exit,退出
 			if (check==EXIT) {
 				cout << "你已退出" << endl;
-				write(pipe_fd[1], check.c_str(), check.length()
+				write(pipe_fd[1], check.c_str(), check.length())
 				isClientwork = 0;
 				exit(0);
 			}
