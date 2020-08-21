@@ -198,7 +198,7 @@ void Server::Start() {
 			break;
 		}
 
-		cout << "当前就绪的事件数量epoll_events_count =" << epoll_events_count << endl;
+		//cout << "当前就绪的事件数量epoll_events_count =" << epoll_events_count << endl;
 
 		//处理这epoll_events_count个就绪事件
 		for (int i = 0; i < epoll_events_count; ++i)
