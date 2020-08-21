@@ -98,6 +98,12 @@ int Server::SendBroadcastMessage(int clientfd)
 	// 接收新消息
 	cout << "receive data from client(clientID = " << clientfd << ")" << endl;
 	int len = recv(clientfd, recv_buf, BUF_SIZE, 0);
+	string check(recv_buf);//字符串里面有\n因此发送长度最小为2
+	check = check.substr(0, check.length() - 1);
+	if (check.length() == 0)
+	{
+		return 0;
+	}
 	cout << "recv()的返回值len是" << len<<"内容是：" <<recv_buf<< endl;
 	//清空结构体，把接受到的字符串转换为结构体
 	memset(&msg, 0, sizeof(msg));
