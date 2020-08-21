@@ -138,7 +138,7 @@ void Client::Start() {
 				cout << "你已退出" << endl;
 				write(pipe_fd[1], check.c_str(), check.length());
 				isClientwork = 0;
-				exit(0);
+				
 			}
 			// 子进程将信息写入管道
 			else {
@@ -189,14 +189,14 @@ void Client::Start() {
 				else {
 					//父进程从管道中读取数据
 					int ret = read(events[i].data.fd, recv_buf, BUF_SIZE);
-					string check1(msg.content);//字符串里面有\n因此发送长度最小为2
-					check1 = check1.substr(0, check1.length() - 1);
+					string check1(recv_buf);//字符串里面有\n因此发送长度最小为2
 					//check.replace('\r','');
 					//check.replace('\n','');
 					// 客户输出exit,退出
 					if (check1 == EXIT) {
-						Close();
-						exit(0);
+						isClientwork = 0;
+						cout<<"子进程关闭，父进程也关闭退出"<<endl;
+						break;
 					}
 					// ret = 0
 					if (ret == 0)
