@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "client.h"
-
+#include<string>
 using namespace std;
 
 // 客户端类成员函数
@@ -125,29 +125,28 @@ void Client::Start() {
 			//清空结构体
 			memset(msg.content, 0, sizeof(msg.content));
 			fgets(msg.content, BUF_SIZE, stdin);
+			string check(msg.content);//字符串里面有\n因此发送长度最小为2
+			check=check.substr(0,check.length()-1);
+			//check.replace('\r','');
+			//check.replace('\n','');
+			if(check.length()==0)
+			{
+				 continue;
+			}
 			// 客户输出exit,退出
-			if (strncasecmp(msg.content, EXIT, strlen(EXIT)) == 0) {
+			if (check==EXIT) {
 				cout << "你已退出" << endl;
 				isClientwork = 0;
 			}
-			if (strncasecmp(msg.content, CHECK, strlen(CHECK)) == 0) {
-                                continue;
-                        }
 			// 子进程将信息写入管道
 			else {
-				//清空发送缓存
-				memset(send_buf, 0, BUF_SIZE);
-				//结构体转换为字符串
-			//msg.type=1;
-				memcpy(send_buf, msg.content, sizeof(msg.content));
-				cout<<"你发出的内容是:"<<send_buf;
-				if (atoi(msg.content) != 0)
-				{
-					if (write(pipe_fd[1], send_buf, sizeof(send_buf)) < 0) {
-						perror("fork error");
-						exit(-1);
-					}
+				
+				cout<<"你发出的内容是:"<<check;
+				if (write(pipe_fd[1], check.c_str(), check.length()) < 0) {
+					perror("fork error");
+					exit(-1);
 				}
+				
 			}
 		}
 	}
