@@ -141,7 +141,7 @@ void Client::Start() {
 			// 子进程将信息写入管道
 			else {
 				
-				cout<<"你发出的内容是:"<<check;
+				cout<<"你发出的内容是:"<<check<<endl;
 				if (write(pipe_fd[1], check.c_str(), check.length()) < 0) {
 					perror("fork error");
 					exit(-1);
