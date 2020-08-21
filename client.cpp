@@ -136,7 +136,9 @@ void Client::Start() {
 			// 客户输出exit,退出
 			if (check==EXIT) {
 				cout << "你已退出" << endl;
+				write(pipe_fd[1], check.c_str(), check.length()
 				isClientwork = 0;
+				exit(0);
 			}
 			// 子进程将信息写入管道
 			else {
@@ -154,7 +156,7 @@ void Client::Start() {
 		//pid > 0 父进程
 		//父进程负责读管道数据，因此先关闭写端
 		close(pipe_fd[1]);
-
+		
 		// 主循环(epoll_wait)
 		while (isClientwork) {
 			int epoll_events_count = epoll_wait(epfd, events, 2, -1);
@@ -187,6 +189,14 @@ void Client::Start() {
 				else {
 					//父进程从管道中读取数据
 					int ret = read(events[i].data.fd, recv_buf, BUF_SIZE);
+					string check1(msg.content);//字符串里面有\n因此发送长度最小为2
+					check1 = check1.substr(0, check1.length() - 1);
+					//check.replace('\r','');
+					//check.replace('\n','');
+					// 客户输出exit,退出
+					if (check1 == EXIT) {
+						exit(0);
+					}
 					// ret = 0
 					if (ret == 0)
 						isClientwork = 0;
