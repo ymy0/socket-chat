@@ -195,6 +195,7 @@ void Client::Start() {
 					//check.replace('\n','');
 					// 客户输出exit,退出
 					if (check1 == EXIT) {
+						Close();
 						exit(0);
 					}
 					// ret = 0
