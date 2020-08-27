@@ -210,7 +210,11 @@ void Server::Start() {
 				struct sockaddr_in client_address;
 				socklen_t client_addrLength = sizeof(struct sockaddr_in);
 				int clientfd = accept(listener, (struct sockaddr*) & client_address, &client_addrLength);
-
+				if (clientfd < 0)
+				{
+					cout << "循环中的非阻塞空连接" << endl;
+					continue;
+				}
 				cout << "收到新的客户端连接client connection from: "
 					<< inet_ntoa(client_address.sin_addr) << ":"
 					<< ntohs(client_address.sin_port) << ", clientfd = "
